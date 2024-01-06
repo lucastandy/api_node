@@ -56,11 +56,6 @@ app.post("/users", (req, res) => {
 
 });
 
-// Iniciando o servidor na porta 8090, criando a função utilizando o modelo Arrow function para retornar a mansagem de sucesso
-app.listen(8090, () =>{
-    console.log("Servidor iniciado na porta 8090: http://localhost:8090");
-});
-
 // Criando a rota editar
 app.put("/users/:id", (req, res) =>{
     
@@ -72,6 +67,22 @@ app.put("/users/:id", (req, res) =>{
 
     // Retornando um objeto como resposta
     return res.json({id, _id, name, email, situationId});
+});
+
+// Criando a rota apagar
+app.delete("/users/:id", (req, res) => {
+    // Recebendo o parâmetro enviado na URL
+    const {id} = req.params;
+    
+    // Retornando um objeto como resposta
+    return res.json({id});
+
+});
+
+
+// Iniciando o servidor na porta 8090, criando a função utilizando o modelo Arrow function para retornar a mansagem de sucesso
+app.listen(8090, () =>{
+    console.log("Servidor iniciado na porta 8090: http://localhost:8090");
 });
 
 
