@@ -61,5 +61,18 @@ app.listen(8090, () =>{
     console.log("Servidor iniciado na porta 8090: http://localhost:8090");
 });
 
+// Criando a rota editar
+app.put("/users/:id", (req, res) =>{
+    
+    // Recebendo o parâmetro enviado na URL
+    const {id} = req.params;
+
+    // Recebendo os dados enviados no corpo da requisição
+    const {_id, name, email, situationId} = req.body;
+
+    // Retornando um objeto como resposta
+    return res.json({id, _id, name, email, situationId});
+});
+
 
 
