@@ -33,6 +33,21 @@ Comando que roda o projeto usando o nodemon
 Abrir o endereço no navegador para acessar a página inicial
 ### http://localhost:8090
 
+Comando SQL para criar a base de dados
+### CREATE DATABASE celke_api CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+Sequelize é uma biblioteca JavaScript que facilita o gerenciamento do banco de dados SQL
+### npm install --save sequelize
+
+Instalar o drive do banco de dados (OBS: consulte a documentação sequelize para ver outros drives)
+### npm install --save mysql2
+
+Sequelize-cli interface de linha de comando usada para criar modelos, configurações e arquivos de migração para bancos de dados
+### 
+
+Iniciando o sequelize-cli e criando o arquivo config
+### npx sequelize-cli init
+
 
 
 
