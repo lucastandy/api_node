@@ -49,6 +49,8 @@ Iniciando o sequelize-cli e criando o arquivo config
 ### npx sequelize-cli init
 
 
+Dependência para manipular variáveis de ambiente
+### npm install dotenv --save
 
 
 

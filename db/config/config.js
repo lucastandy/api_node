@@ -1,25 +1,27 @@
-// Exportando as credenciais do banco de dados
+// Incluindo o arquivo com as variáveis de ambiente
+require('dotenv').config();
 
+// Exportando as credenciais do banco de dados
 module.exports = {
   "development": {
-    "username": "root",
-    "password": "",
-    "database": "celke_api",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "username": process.env.DB_USER,
+    "password": process.env.DB_PASS,
+    "database": process.env.DB_BASE,
+    "host": process.env.DB_HOST,
+    "dialect": process.env.DB_DIALECT
   },
   "test": {
-    "username": "root",
-    "password": "",
-    "database": "celke_api",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "username": process.env.DB_USER,
+    "password": process.env.DB_PASS,
+    "database": process.env.DB_BASE,
+    "host": process.env.DB_HOST,
+    "dialect": process.env.DB_DIALECT
   },
   "production": {
-    "username": "root",
-    "password": "",
-    "database": "celke_api",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "username": process.env.DB_USER,
+    "password": process.env.DB_PASS,
+    "database": process.env.DB_BASE,
+    "host": process.env.DB_HOST,
+    "dialect": process.env.DB_DIALECT
   }
 }
