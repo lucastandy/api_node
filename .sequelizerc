@@ -3,7 +3,7 @@ const path = require('path');
 
 // Exportando o caminho da conexão com banco de dados, models, seeders e migrations
 module.exports = {
-  'config': path.resolve('db','config', 'config.json'),
+  'config': path.resolve('db','config', 'config.js'),
   'models-path': path.resolve('db','models'),
   'seeders-path': path.resolve('db','seeders'),
   'migrations-path': path.resolve('db','migrations')
