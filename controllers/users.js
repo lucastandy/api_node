@@ -9,9 +9,30 @@ const router = express.Router();
 const db = require("../db/models"); // O node por padrão vai pegar o arquivo index.js, presente na pasta models.
 
 // Criando a rota listar
-router.get("/", (req, res) => {
-    // Retornando um texto como resposta
-    res.send("Listar os usuários!");
+router.get("/", async (req, res) => {
+    
+    // Recuperando todos os usuários do banco de dados
+    const users = await db.Users.findAll({
+        // Indicando quais colunas recuperar
+        attributes: ['id','name','email','situationId'],
+        // Ordenando os registros pela coluna id na forma descrescente
+        order: [['id','DESC']]
+    });
+
+    // Acessa o if se encontrar o registro no banco de dados
+    if(users){
+        // Retornando um objeto como resposta
+        return res.json({
+            error: false,
+            users
+        });
+    }else{
+        // Retornando um objeto como resposta
+        return res.status(40).json({
+            error: true,
+            message: "Erro: nenhum usuário encontrado!"
+        });
+    }
 });
 
 // Criação da rota visualizar
