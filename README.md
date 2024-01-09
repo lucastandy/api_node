@@ -52,5 +52,12 @@ Iniciando o sequelize-cli e criando o arquivo config
 Dependência para manipular variáveis de ambiente
 ### npm install dotenv --save
 
+Criar a Models situacao
+### npx sequelize-cli model:generate --name Situations --attributes nameSituation:string
 
+Criar a Models usuários
+### npx sequelize-cli model:generate --name Users --attributes name:string,email:string,situationId:integer
+
+Comando para executar as migrations
+### npx sequelize-cli db:migrate
 
