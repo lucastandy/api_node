@@ -5,6 +5,9 @@ const express = require('express');
 // Chamando a função express Router
 const router = express.Router();
 
+// Realizando a inclusão da conexão com o banco de dados
+const db = require("../db/models"); // O node por padrão vai pegar o arquivo index.js, presente na pasta models.
+
 // Criando a rota listar
 router.get("/", (req, res) => {
     // Retornando um texto como resposta
@@ -38,18 +41,30 @@ Dados em formato de objeto
 {
     "name" : "Lucas Tandy",
     "email": "lucastitandy@gmail.com",
-    "subject": "Assunto",
-    "content": "Conteúdo"
+    "situationId": 1
 }
 
 */
-router.post("/users", (req, res) => {
+router.post("/users", async (req, res) => {
     
     // Recebendo os dados enviados no corpo da requisição
-    var {name, email, situationId} = req.body;
+    var data = req.body;
 
-    // Retornando um objeto como resposta
-    return res.json({name, email, situationId});
+    // Salvando os dados no banco de dados
+    await db.Users.create (data).then((dataUser) => {
+        // Retornando um objeto como resposta
+        return res.json({
+            error: false,
+            message: "Usuário cadastrado com sucesso!",
+            dataUser
+        });
+    }).catch(() => {
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: usuário não cadastrado"
+        });
+    });
 
 });
 
