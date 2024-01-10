@@ -16,7 +16,13 @@ router.get("/", async (req, res) => {
         // Indicando quais colunas recuperar
         attributes: ['id','name','email','situationId'],
         // Ordenando os registros pela coluna id na forma descrescente
-        order: [['id','DESC']]
+        order: [['id','DESC']],
+        // Buscando dados na tabela secundária
+        include:[{
+            model:db.Situations,
+            attributes: ['nameSituation']
+        }]
+
     });
 
     // Acessa o if se encontrar o registro no banco de dados
