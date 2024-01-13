@@ -9,8 +9,39 @@ const router = express.Router();
 const db = require("../db/models"); // O node por padrão vai pegar o arquivo index.js, presente na pasta models.
 
 // Criando a rota listar
-router.get("/", async (req, res) => {
-    
+// Endereço para acessar a api através de aplicação externa: http://localhost:8090/users?page=1
+router.get("/users", async (req, res) => {
+
+    // Recebendo o número da página. Quando não é enviado o número da página é atribuído a página 1.
+    const {page = 1} = req.query;
+    // console.log(page);
+
+    // Indicando o limite de registros em cada página
+    const limit = 40;
+
+    // Variável com o número da última página
+    var lastPage = 1;
+
+    // Contando a quantidade de registros no banco de dados
+    const countUser = await db.Users.count();
+
+    // Acessa o IF quando encontrar registro no banco de dados
+    if(countUser !== 0){
+        // Calculando a última página
+        lastPage = Math.ceil(countUser / limit);
+        // console.log(lastPage);
+    }else{
+        // Retornando um objeto como resposta
+        return res.status(40).json({
+            error: true,
+            message: "Erro: nenhum usuário encontrado!"
+        });
+
+    }
+
+
+
+
     // Recuperando todos os usuários do banco de dados
     const users = await db.Users.findAll({
         // Indicando quais colunas recuperar
@@ -21,7 +52,10 @@ router.get("/", async (req, res) => {
         include:[{
             model:db.Situations,
             attributes: ['nameSituation']
-        }]
+        }],
+        // Calcular a partir de qual registro deve retornar e o limite de registros
+        offset: Number ((page * limit) -limit),
+        limit: limit
 
     });
 
