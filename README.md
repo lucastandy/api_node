@@ -2,6 +2,15 @@ Como rodar o projeto baixado?
 Instale todas as dependências indicado pelo pachage.json
 ### npm install
 
+Criando a base de dados "celke_api" no MYSQL
+Altere as credenciais do banco de dados no arquivo ".env"
+
+Comando para executar as migrations
+### npx sequelize-cli db:migrate
+
+Comando para executar as seeders
+### npx sequelize-cli db:seed:all
+
 Comando para rodar o projeto
 ### node.app.js
 
@@ -60,4 +69,13 @@ Criar a Models usuários
 
 Comando para executar as migrations
 ### npx sequelize-cli db:migrate
+
+Comando para criar seeders situations
+### npx sequelize-cli seed:generate --name demo-situations
+
+Comando para criar seeders users
+### npx sequelize-cli seed:generate --name demo-users
+
+Comando para executar as seeders
+### npx sequelize-cli db:seed:all
 
