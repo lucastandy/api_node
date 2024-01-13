@@ -168,12 +168,27 @@ router.put("/users/", async (req, res) =>{
 });
 
 // Criando a rota apagar
-router.delete("/users/:id", (req, res) => {
+router.delete("/users/:id", async (req, res) => {
     // Recebendo o parâmetro enviado na URL
     const {id} = req.params;
-    
-    // Retornando um objeto como resposta
-    return res.json({id});
+
+    // Apagando o usuário no banco de dados utilizando a MODELS users
+    await db.Users.destroy({
+        // Acrescentando o WHERE na instrução SQL indicando qual registro exluir no BD
+        where:{id}
+    }).then(() =>{
+        // Retornando um objeto como resposta
+        return res.json({
+            error: false,
+            message: "Usuário apagado com sucesso!"
+        });
+    }).catch(() => {
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: usuário não apgado"
+        });
+    });
 
 });
 
