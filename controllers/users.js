@@ -144,16 +144,27 @@ router.post("/users", async (req, res) => {
 });
 
 // Criando a rota editar
-router.put("/users/:id", (req, res) =>{
-    
-    // Recebendo o parâmetro enviado na URL
-    const {id} = req.params;
+router.put("/users/", async (req, res) =>{
 
     // Recebendo os dados enviados no corpo da requisição
-    const {_id, name, email, situationId} = req.body;
+    const data = req.body;
 
-    // Retornando um objeto como resposta
-    return res.json({id, _id, name, email, situationId});
+    // Editando os dados no banco de dados
+    await db.Users.update(data, {where: {id: data.id}}).then(() =>{
+        // Retornando um objeto como resposta
+        return res.json({
+            error: false,
+            message: "Usuário editado com sucesso!"
+        });
+
+    }).catch(() => {
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: usuário não editado"
+        });
+    });
+
 });
 
 // Criando a rota apagar
