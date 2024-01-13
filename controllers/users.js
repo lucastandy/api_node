@@ -39,9 +39,6 @@ router.get("/users", async (req, res) => {
 
     }
 
-
-
-
     // Recuperando todos os usuários do banco de dados
     const users = await db.Users.findAll({
         // Indicando quais colunas recuperar
@@ -68,7 +65,7 @@ router.get("/users", async (req, res) => {
         });
     }else{
         // Retornando um objeto como resposta
-        return res.status(40).json({
+        return res.status(400).json({
             error: true,
             message: "Erro: nenhum usuário encontrado!"
         });
@@ -76,21 +73,38 @@ router.get("/users", async (req, res) => {
 });
 
 // Criação da rota visualizar
-router.get("/users/:id", (req, res) =>{
+router.get("/users/:id", async (req, res) =>{
     
     // Usando a desestruturação para simplificar a atribuição do parâmetro
     const {id} = req.params; // Ex.: http://localhost:8090/users/1
 
-    // Usando a desestruturação para simplificar a atribuição do parâmetro
-    const {sit} = req.query; // Ex.: http://localhost:8090/users/1?sit=2
-
-    return res.json({
-        id,
-        name: "Lucas",
-        email: "lucastitandy@gmail.com",
-        sit
+    // Recuperando os registros do banco de dados
+    const user = await db.Users.findOne({
+        attributes: ['id','name','email','situationId','createdAt','updatedAt'],
+        // Acrescentando condição para indicar qual registro deve ser retornado do banco de dados
+        where:{id},
+        // Busca dados na tabela secudária
+        include:[{
+            model: db.Situations,
+            attributes: ['nameSituation']
+        }]
     });
-    // res.send(`Visualizar: ${id}`);
+    
+    // Acessa o if se encontrar o registro no banco de dados
+    if(user){
+        // Retornando um objeto como resposta
+        return res.json({
+            error: false,
+            user
+        });
+    }else{
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: usuário não encontrado!"
+        });
+    }
+
 });
 
 // Criando a rota cadastrar
