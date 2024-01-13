@@ -1,3 +1,6 @@
+// Dependência para criptografar a senha
+const bycrypt = require('bcryptjs');
+
 'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
@@ -8,6 +11,7 @@ module.exports = {
       {
         name: "Cesar",
         email: "cesar@celke.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -15,6 +19,7 @@ module.exports = {
       {
         name: "Cesar 2",
         email: "cesar@celke2.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -22,6 +27,7 @@ module.exports = {
       {
         name: "Cesar 3",
         email: "cesar@celke3.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -29,6 +35,7 @@ module.exports = {
       {
         name: "Cesar 4",
         email: "cesar@celke4.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -36,6 +43,7 @@ module.exports = {
       {
         name: "Cesar 5",
         email: "cesar@celke5.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -43,6 +51,7 @@ module.exports = {
       {
         name: "Cesar 6",
         email: "cesar@celke6.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -50,6 +59,7 @@ module.exports = {
       {
         name: "Cesar 7",
         email: "cesar@celke7.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -57,6 +67,7 @@ module.exports = {
       {
         name: "Cesar 8",
         email: "cesar@celke8.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -64,6 +75,7 @@ module.exports = {
       {
         name: "Cesar 9",
         email: "cesar@celke9.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -71,6 +83,7 @@ module.exports = {
       {
         name: "Cesar 10",
         email: "cesar@celke10.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -78,6 +91,7 @@ module.exports = {
       {
         name: "Cesar 11",
         email: "cesar@celke11.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -85,6 +99,7 @@ module.exports = {
       {
         name: "Cesar 12",
         email: "cesar@celke12.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -92,6 +107,7 @@ module.exports = {
       {
         name: "Cesar 13",
         email: "cesar@celke13.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -99,6 +115,7 @@ module.exports = {
       {
         name: "Cesar 14",
         email: "cesar@celke14.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 4,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -106,6 +123,7 @@ module.exports = {
       {
         name: "Cesar 15",
         email: "cesar@celke15.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 2,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -113,6 +131,7 @@ module.exports = {
       {
         name: "Cesar 16",
         email: "cesar@celke16.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 2,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -120,6 +139,7 @@ module.exports = {
       {
         name: "Cesar 17",
         email: "cesar@celke17.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 3,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -127,6 +147,7 @@ module.exports = {
       {
         name: "Cesar 18",
         email: "cesar@celke18.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 3,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -134,6 +155,7 @@ module.exports = {
       {
         name: "Cesar 19",
         email: "cesar@celke19.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 3,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -141,6 +163,7 @@ module.exports = {
       {
         name: "Cesar 20",
         email: "cesar@celke20.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 4,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -148,6 +171,7 @@ module.exports = {
       {
         name: "Cesar 21",
         email: "cesar@celke21.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 4,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -155,6 +179,7 @@ module.exports = {
       {
         name: "Cesar 22",
         email: "cesar@celke22.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 4,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -162,6 +187,7 @@ module.exports = {
       {
         name: "Cesar 23",
         email: "cesar@celke23.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 2,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -169,6 +195,7 @@ module.exports = {
       {
         name: "Cesar 24",
         email: "cesar@celke24.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 4,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -176,6 +203,7 @@ module.exports = {
       {
         name: "Cesar 25",
         email: "cesar@celke25.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 3,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -183,6 +211,7 @@ module.exports = {
       {
         name: "Cesar 26",
         email: "cesar@celke26.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 4,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -190,6 +219,7 @@ module.exports = {
       {
         name: "Cesar 27",
         email: "cesar@celke27.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 3,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -197,6 +227,7 @@ module.exports = {
       {
         name: "Cesar 28",
         email: "cesar@celke28.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 2,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -204,6 +235,7 @@ module.exports = {
       {
         name: "Cesar 29",
         email: "cesar@celke29.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 2,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -211,6 +243,7 @@ module.exports = {
       {
         name: "Cesar 30",
         email: "cesar@celke30.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 2,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -218,6 +251,7 @@ module.exports = {
       {
         name: "Cesar 31",
         email: "cesar@celke31.com.br",
+        password: await bycrypt.hash('123456', 8),
         situationId: 1,
         createdAt: new Date(),
         updatedAt: new Date()

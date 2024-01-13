@@ -8,6 +8,10 @@ const router = express.Router();
 // Realizando a inclusão da conexão com o banco de dados
 const db = require("../db/models"); // O node por padrão vai pegar o arquivo index.js, presente na pasta models.
 
+// Dependência para criptografar a senha
+const bycrypt = require('bcryptjs');
+const { STRING } = require('sequelize');
+
 // Criando a rota listar
 // Endereço para acessar a api através de aplicação externa: http://localhost:8090/users?page=1
 router.get("/users", async (req, res) => {
@@ -124,6 +128,9 @@ router.post("/users", async (req, res) => {
     
     // Recebendo os dados enviados no corpo da requisição
     var data = req.body;
+
+    // Criptografando a senha
+    data.password = await bycrypt.hash(String(data.password), 8);
 
     // Salvando os dados no banco de dados
     await db.Users.create (data).then((dataUser) => {

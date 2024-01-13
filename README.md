@@ -79,3 +79,8 @@ Comando para criar seeders users
 Comando para executar as seeders
 ### npx sequelize-cli db:seed:all
 
+Comando para criar migration
+### npx sequelize-cli migration:generate --name alter-users-password
+
+Comando para instalar o módulo para criptografar a senha
+### npm install --save bcryptjs
