@@ -1,86 +1,137 @@
-Como rodar o projeto baixado?
-Instale todas as dependências indicado pelo pachage.json
-### npm install
+# Criação de uma API com NODE.js
 
-Criando a base de dados "celke_api" no MYSQL
-Altere as credenciais do banco de dados no arquivo ".env"
+## Como rodar o projeto baixado?
+### Instale todas as dependências indicado pelo pachage.json
+```
+npm install
+```
 
-Comando para executar as migrations
-### npx sequelize-cli db:migrate
+## Criando a base de dados "celke_api" no MYSQL
+### Altere as credenciais do banco de dados no arquivo ".env"
 
-Comando para executar as seeders
-### npx sequelize-cli db:seed:all
+### Comando para executar as migrations
+```
+npx sequelize-cli db:migrate
+```
 
-Comando para rodar o projeto
-### node.app.js
+### Comando para executar as seeders
+```
+npx sequelize-cli db:seed:all
+```
 
-Comando que roda o projeto usando o nodemon
-### nodemon app.js
+### Comando para rodar o projeto
+```
+node.app.js
+```
 
-Abrir o endereço no navegador para acessar a página inicial
-### http://localhost:8090
+### Comando que roda o projeto usando o nodemon
+```
+nodemon app.js
+```
 
-Sequência para criar o projeto
-Comando para criar o arquivo package
-### npm init
+### Abrir o endereço no navegador para acessar a página inicial: http://localhost:8090
 
-Comando para instalar a dependência de forma global, "-g" significa globalmente. Execute este comando através do promt de comando. Execute somente se nunca instalou a dependência na máquina. Após a instalação, reinicie o PC.
-### npm install --save express
+## Sequência para criar o projeto
+### Comando para criar o arquivo package
+```
+npm init
+```
 
-Comando para rodar o prjeto
-### node app.js
+### Comando para instalar a dependência de forma global, "-g" significa globalmente. Execute este comando através do promt de comando. Execute somente se nunca instalou a dependência na máquina. Após a instalação, reinicie o PC.
+```
+npm install --save express
+```
 
-Dependência que serve para reiniciar o servidor sempre que houver alteração no código fonte.
-### npm install -g nodemon
+### Comando para rodar o prjeto
+```
+node app.js
+```
 
-Instalando a dependência como desenvolvedor
-### npm install --save-dev nodemon
+### Dependência que serve para reiniciar o servidor sempre que houver alteração no código fonte.
+```
+npm install -g nodemon
+```
 
-Comando que roda o projeto usando o nodemon
-### nodemon app.js
+### Instalando a dependência como desenvolvedor
+```
+npm install --save-dev nodemon
+```
 
-Abrir o endereço no navegador para acessar a página inicial
-### http://localhost:8090
+### Comando que roda o projeto usando o nodemon
+```
+nodemon app.js
+```
 
-Comando SQL para criar a base de dados
-### CREATE DATABASE celke_api CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+### Abrir o endereço no navegador para acessar a página inicial: http://localhost:8090
 
-Sequelize é uma biblioteca JavaScript que facilita o gerenciamento do banco de dados SQL
-### npm install --save sequelize
+### Comando SQL para criar a base de dados
+```
+CREATE DATABASE celke_api CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
 
-Instalar o drive do banco de dados (OBS: consulte a documentação sequelize para ver outros drives)
-### npm install --save mysql2
+### Sequelize é uma biblioteca JavaScript que facilita o gerenciamento do banco de dados SQL
+```
+npm install --save sequelize
+```
 
-Sequelize-cli interface de linha de comando usada para criar modelos, configurações e arquivos de migração para bancos de dados
-### 
+### Instalar o drive do banco de dados (OBS: consulte a documentação sequelize para ver outros drives)
+```
+npm install --save mysql2
+```
 
-Iniciando o sequelize-cli e criando o arquivo config
-### npx sequelize-cli init
+### Sequelize-cli interface de linha de comando usada para criar modelos, configurações e arquivos de migração para bancos de dados. 
 
+### Iniciando o sequelize-cli e criando o arquivo config
+```
+npx sequelize-cli init
+```
 
-Dependência para manipular variáveis de ambiente
-### npm install dotenv --save
+### Dependência para manipular variáveis de ambiente
+```
+npm install dotenv --save
+```
 
-Criar a Models situacao
-### npx sequelize-cli model:generate --name Situations --attributes nameSituation:string
+### Criar a Models situacao
+```
+npx sequelize-cli model:generate --name Situations --attributes nameSituation:string
+```
 
-Criar a Models usuários
-### npx sequelize-cli model:generate --name Users --attributes name:string,email:string,situationId:integer
+### Criar a Models usuários
+```
+npx sequelize-cli model:generate --name Users --attributes name:string,email:string,situationId:integer
+```
 
-Comando para executar as migrations
-### npx sequelize-cli db:migrate
+### Comando para executar as migrations
+```
+npx sequelize-cli db:migrate
+```
 
-Comando para criar seeders situations
-### npx sequelize-cli seed:generate --name demo-situations
+### Comando para criar seeders situations
+```
+npx sequelize-cli seed:generate --name demo-situations
+```
 
-Comando para criar seeders users
-### npx sequelize-cli seed:generate --name demo-users
+### Comando para criar seeders users
+```
+npx sequelize-cli seed:generate --name demo-users
+```
 
-Comando para executar as seeders
-### npx sequelize-cli db:seed:all
+### Comando para executar as seeders
+```
+npx sequelize-cli db:seed:all
+```
 
-Comando para criar migration
-### npx sequelize-cli migration:generate --name alter-users-password
+### Comando para criar migration
+```
+npx sequelize-cli migration:generate --name alter-users-password
+```
 
-Comando para instalar o módulo para criptografar a senha
-### npm install --save bcryptjs
+### Comando para instalar o módulo para criptografar a senha
+```
+npm install --save bcryptjs
+```
+
+### Executanto down - rollback - Permite que seja desfeita a migration, permitindo a gestão das alterações do banco de dados, versionamento.
+```
+npx sequelize-cli db:migrate:undo --name nome-da-migration
+```
