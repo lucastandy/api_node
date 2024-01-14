@@ -38,11 +38,7 @@ router.post("/situations", async (req, res) => {
             error: true,
             message: "Erro: situação não cadastrada"
         });
-
     });
-
-    
-
 });
 
 

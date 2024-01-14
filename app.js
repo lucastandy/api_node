@@ -11,10 +11,12 @@ app.use(express.json());
 // Incluindo as Controllers
 const users = require("./controllers/users");
 const situations = require("./controllers/situations");
+const login = require("./controllers/login");
 
 // Criando as rotas
 app.use('/',users);
 app.use('/',situations);
+app.use('/',login);
 
 // Iniciando o servidor na porta 8090, criando a função utilizando o modelo Arrow function para retornar a mansagem de sucesso
 app.listen(8090, () =>{
