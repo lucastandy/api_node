@@ -11,6 +11,9 @@ const db = require("../db/models"); // O node por padrão vai pegar o arquivo in
 // Dependência para criptografar a senha
 const bycrypt = require('bcryptjs');
 
+// Dependência para gerar um token de autenticação
+const jwt = require('jsonwebtoken');
+
 // Criando a rota Login
 // Endereço para acessar a api através de aplicação externa: http://localhost:8090/login
 router.post("/login", async (req, res) => {
@@ -40,10 +43,19 @@ router.post("/login", async (req, res) => {
             message: "Erro: usuário ou senha incorreta!"
         });
     }
+    // Gerando o token de autenticação
+    const token = jwt.sign({id: user.id}, "123",{
+        expiresIn: 600, // Indica 10 minutos
+        // expiresIn: '7d', // Corresponde a 7 dias
+        
+    });
+
+
     // Retornando um objeto como resposta
     return res.json({
         error: false,
-        message: "Login realizado com sucesso!"
+        message: "Login realizado com sucesso!",
+        user:{id: user.id, name: user.name, email: user.email, token}
     });
 });
 

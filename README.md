@@ -135,3 +135,8 @@ npm install --save bcryptjs
 ```
 npx sequelize-cli db:migrate:undo --name nome-da-migration
 ```
+
+### Instalar a dependência JWT
+```
+npm install --save jsonwebtoken
+```
