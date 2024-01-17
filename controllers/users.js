@@ -10,15 +10,21 @@ const db = require("../db/models"); // O node por padrão vai pegar o arquivo in
 
 // Dependência para criptografar a senha
 const bycrypt = require('bcryptjs');
-const { STRING } = require('sequelize');
+// const { STRING } = require('sequelize');
+
+// Incluindo o arquivo para validar o token
+const {eAdmin} = require('../services/authService');
 
 // Criando a rota listar
 // Endereço para acessar a api através de aplicação externa: http://localhost:8090/users?page=1
-router.get("/users", async (req, res) => {
+router.get("/users", eAdmin,async (req, res) => {
 
     // Recebendo o número da página. Quando não é enviado o número da página é atribuído a página 1.
     const {page = 1} = req.query;
     // console.log(page);
+
+    // Recuperando o valor que estava no token, tratado no authService.js
+    console.log(req.userId);
 
     // Indicando o limite de registros em cada página
     const limit = 40;
@@ -77,7 +83,7 @@ router.get("/users", async (req, res) => {
 });
 
 // Criação da rota visualizar
-router.get("/users/:id", async (req, res) =>{
+router.get("/users/:id", eAdmin,async (req, res) =>{
     
     // Usando a desestruturação para simplificar a atribuição do parâmetro
     const {id} = req.params; // Ex.: http://localhost:8090/users/1
@@ -124,7 +130,7 @@ Dados em formato de objeto
 }
 
 */
-router.post("/users", async (req, res) => {
+router.post("/users", eAdmin,async (req, res) => {
     
     // Recebendo os dados enviados no corpo da requisição
     var data = req.body;
@@ -151,7 +157,7 @@ router.post("/users", async (req, res) => {
 });
 
 // Criando a rota editar
-router.put("/users/", async (req, res) =>{
+router.put("/users/", eAdmin,async (req, res) =>{
 
     // Recebendo os dados enviados no corpo da requisição
     const data = req.body;
@@ -175,7 +181,7 @@ router.put("/users/", async (req, res) =>{
 });
 
 // Criando a rota apagar
-router.delete("/users/:id", async (req, res) => {
+router.delete("/users/:id", eAdmin,async (req, res) => {
     // Recebendo o parâmetro enviado na URL
     const {id} = req.params;
 

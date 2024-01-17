@@ -8,6 +8,9 @@ const router = express.Router();
 // Realizando a inclusão da conexão com o banco de dados
 const db = require("../db/models"); // O node por padrão vai pegar o arquivo index.js, presente na pasta models.
 
+// Incluindo o arquivo para validar o token
+const {eAdmin} = require('../services/authService');
+
 // Criando a rota cadastrar
 /*
 A aplicação externa deve indicar que está enviando os dados em formato de objeto:
@@ -19,7 +22,7 @@ Dados em formato de objeto
 }
 
 */
-router.post("/situations", async (req, res) => {
+router.post("/situations", eAdmin,async (req, res) => {
     
     // Recebendo os dados enviados no corpo da requisição
     var data = req.body;

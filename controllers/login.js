@@ -14,6 +14,9 @@ const bycrypt = require('bcryptjs');
 // Dependência para gerar um token de autenticação
 const jwt = require('jsonwebtoken');
 
+// Incluindo o arquivo com as variáveis de ambiente
+require('dotenv').config();
+
 // Criando a rota Login
 // Endereço para acessar a api através de aplicação externa: http://localhost:8090/login
 router.post("/login", async (req, res) => {
@@ -44,7 +47,7 @@ router.post("/login", async (req, res) => {
         });
     }
     // Gerando o token de autenticação
-    const token = jwt.sign({id: user.id}, "123",{
+    const token = jwt.sign({id: user.id}, process.env.SECRET,{
         expiresIn: 600, // Indica 10 minutos
         // expiresIn: '7d', // Corresponde a 7 dias
         
