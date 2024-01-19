@@ -5,12 +5,15 @@ const express = require('express');
 // Chamando a função express Router
 const router = express.Router();
 
-// Realizando a inclusão da conexão com o banco de dados
-const db = require("../db/models"); // O node por padrão vai pegar o arquivo index.js, presente na pasta models.
-
 // Dependência para criptografar a senha
 const bycrypt = require('bcryptjs');
 // const { STRING } = require('sequelize');
+
+// Dependência para validar os inputs o formulário
+const yup = require('yup');
+
+// Realizando a inclusão da conexão com o banco de dados
+const db = require("../db/models"); // O node por padrão vai pegar o arquivo index.js, presente na pasta models.
 
 // Incluindo o arquivo para validar o token
 const {eAdmin} = require('../services/authService');
@@ -130,10 +133,31 @@ Dados em formato de objeto
 }
 
 */
-router.post("/users", eAdmin,async (req, res) => {
+router.post("/users", eAdmin, async (req, res) => {
     
     // Recebendo os dados enviados no corpo da requisição
     var data = req.body;
+
+    // Validando os campos utilizando o yup
+    const schema = yup.object().shape({
+        situationId: yup.number("Erro: Necessário preecher o campo situação!").required("Erro: Necessário preecher o campo situação!"),
+        password: yup.string("Erro: Necessário preecher o campo senha!").required("Erro: Necessário preecher o campo senha!"),
+        email: yup.string("Erro: Necessário preecher o campo email!").required("Erro: Necessário preecher o campo email!").email("Erro: Necessário preencher um e-mail válido!"),
+        name: yup.string("Erro: Necessário preecher o campo nome!").required("Erro: Necessário preecher o campo nome!"),
+
+    });
+
+    // Verificando se todos os campos passaram pela validação
+    try{
+        await schema.validate(data);
+    }catch(error){
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: error.errors
+        });
+
+    }
 
     // Criptografando a senha
     data.password = await bycrypt.hash(String(data.password), 8);
