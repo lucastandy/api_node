@@ -12,6 +12,9 @@ const bycrypt = require('bcryptjs');
 // Dependência para validar os inputs o formulário
 const yup = require('yup');
 
+// Operador do sequelize
+const {Op} = require("sequelize");
+
 // Realizando a inclusão da conexão com o banco de dados
 const db = require("../db/models"); // O node por padrão vai pegar o arquivo index.js, presente na pasta models.
 
@@ -159,6 +162,29 @@ router.post("/users", eAdmin, async (req, res) => {
 
     }
 
+    // Recuperando o registro do banco de dados
+    const user = await db.Users.findOne({
+
+        // Indicando quais colunas recuperar
+        attributes: ['id'],
+
+        // Acrescentando condição para indicar qual registro deve ser retornado do banco de dados
+        where: {email: data.email}
+
+    });
+
+    console.log(user);
+
+    // Acessando o IF se encontrar o registro no banco de dados
+    if(user){
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: Este e-mail já está cadastrado!"
+        });
+
+    }
+
     // Criptografando a senha
     data.password = await bycrypt.hash(String(data.password), 8);
 
@@ -185,6 +211,35 @@ router.put("/users/", eAdmin,async (req, res) =>{
 
     // Recebendo os dados enviados no corpo da requisição
     const data = req.body;
+
+    // Recuperando o registro do banco de dados
+    const user = await db.Users.findOne({
+
+        // Indicando quais colunas recuperar
+        attributes: ['id'],
+
+        // Acrescentando condição para indicar qual registro deve ser retornado do banco de dados
+        where: {
+            email: data.email,
+            id: {
+                // Operador de negação para ignorar o registro do usuário que está sendo editado
+                [Op.ne]: Number(data.id)
+            }
+        }
+
+    });
+
+    // console.log(user);
+
+    // Acessando o IF se encontrar o registro no banco de dados
+    if(user){
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: Este e-mail já está cadastrado!"
+        });
+
+    }
 
     // Editando os dados no banco de dados
     await db.Users.update(data, {where: {id: data.id}}).then(() =>{
