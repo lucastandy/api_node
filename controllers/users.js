@@ -259,6 +259,20 @@ router.put("/users/", eAdmin,async (req, res) =>{
 
 });
 
+// Rota para editar a imagem, recebendo o parâmetro id enviado na URL
+// Endereço de acesso: http://localhost:8089/users-image/1
+router.put("/users-image/:id", async (req, res) => {
+
+    const {id} = req.params;
+    console.log(id);
+
+    // Retornando um objeto como resposta
+    return res.json({
+        error: false,
+        message: "Imagem editada com sucesso!"
+    });
+});
+
 // Criando a rota apagar
 router.delete("/users/:id", eAdmin,async (req, res) => {
     // Recebendo o parâmetro enviado na URL

@@ -150,3 +150,8 @@ npm install --save yup
 ```
 npm install cors
 ```
+
+### Criando a migration para adicionar um campo imagem na tabela users
+```
+npx sequelize-cli migration:generate --name alter-users-image
+```
