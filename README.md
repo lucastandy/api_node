@@ -145,3 +145,8 @@ npm install --save jsonwebtoken
 ```
 npm install --save yup
 ```
+
+### Dependência que permite requisição externa
+```
+npm install cors
+```
