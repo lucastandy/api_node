@@ -99,7 +99,7 @@ router.get("/users/:id", eAdmin, async (req, res) => {
 
     // Recuperando os registros do banco de dados
     const user = await db.Users.findOne({
-        attributes: ['id', 'name', 'email', 'situationId', 'createdAt', 'updatedAt'],
+        attributes: ['id', 'name', 'email', 'situationId', 'image','createdAt', 'updatedAt'],
         // Acrescentando condição para indicar qual registro deve ser retornado do banco de dados
         where: { id },
         // Busca dados na tabela secudária
@@ -271,7 +271,7 @@ router.put("/users-image/:id", upload.single('image'), async (req, res) => {
     // console.log(id);
 
     // Acessa o if quando a extensão da imagem é inválida
-    console.log(req.file);
+    // console.log(req.file);
     if (!req.file) {
         // Retornando um objeto como resposta
         return res.status(400).json({
@@ -281,11 +281,29 @@ router.put("/users-image/:id", upload.single('image'), async (req, res) => {
 
     }
 
+    // Editando no banco de dados
+    db.Users.update(
+        { image: req.file.filename },
+        { where: { id: id } })
+        .then(() => {
+            // Retornando um objeto como resposta
+            return res.json({
+                error: false,
+                message: "Imagem editada com sucesso 2!"
+            });
+        }).catch(() => {
+            // Retornando um objeto como resposta
+            return res.status(400).json({
+                error: true,
+                message: "Erro: Imagem não editada!"
+            });
+        });
+
     // Retornando um objeto como resposta
-    return res.json({
-        error: false,
-        message: "Imagem editada com sucesso!"
-    });
+    // return res.json({
+    //     error: false,
+    //     message: "Imagem editada com sucesso!"
+    // });
 });
 
 // Criando a rota apagar
