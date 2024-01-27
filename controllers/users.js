@@ -114,6 +114,15 @@ router.get("/users/:id", eAdmin, async (req, res) => {
 
     // Acessa o if se encontrar o registro no banco de dados
     if (user) {
+        // Verificando se existe a imagem. Acessa o if quando o usuário possui a imagem.
+        if(user.dataValues.image){
+            // console.log(user.dataValues.image);
+            // Criando o caminho da imagem
+            user.dataValues['image'] = process.env.URL_ADM + "/images/users/"+user.dataValues.image;
+        }else{
+            // Criando o caminho da imagem
+            user.dataValues['image'] = process.env.URL_ADM + "/images/users/icon_user.png";
+        }
         // Retornando um objeto como resposta
         return res.json({
             error: false,
@@ -308,7 +317,7 @@ router.put("/users-image/:id", upload.single('image'), async (req, res) => {
             }
         });
     }
-    
+
     // Editando no banco de dados
     db.Users.update(
         { image: req.file.filename },

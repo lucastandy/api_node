@@ -2,6 +2,9 @@
 // Dependência que gerencia as requisições, rotas e URLs, entre outras funcionalidades
 const express = require('express');
 
+// Incluindo o módulo para gerenciar diretórios e caminhos
+const path = require('path');
+
 // Importando a biblioteca para permitir conexão externa
 const cors = require('cors');
 
@@ -25,6 +28,9 @@ app.use((req, res, next) => {
     next();
 
 });
+
+// Local dos arquivos estáticos. Dando permissão para acessar os arquivos dentro da pasta public.
+app.use(express.static(path.join(__dirname, "public")));
 
 // Incluindo as Controllers
 const users = require("./controllers/users");
