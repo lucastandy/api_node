@@ -24,6 +24,9 @@ const { eAdmin } = require('../services/authService');
 // Incluindo o arquivo com a função de upload
 const upload = require('../services/uploadImgUserServices');
 
+// Incluindo o módulo fs que permite interagir com o sistema de arquivos
+const fs = require('fs');
+
 // Criando a rota listar
 // Endereço para acessar a api através de aplicação externa: http://localhost:8090/users?page=1
 router.get("/users", eAdmin, async (req, res) => {
@@ -281,6 +284,31 @@ router.put("/users-image/:id", upload.single('image'), async (req, res) => {
 
     }
 
+    // Recuperando os registros do banco de dados
+    const user = await db.Users.findOne({
+        // Indicando quais colunas recuperar
+        attributes: ['id','image'],
+
+        // Acrescentando condição para indicar qual registro deve ser retornado do banco de dados
+        where: {id}
+    });
+
+    // Verificando se o usuário tem imagem salva no banco de dados.
+    // console.log(user);
+    if(user.dataValues.image){
+        // Criando o caminho da imagem que o usuário tem no banco de dados
+        var imgOld = `./public/images/users/${user.dataValues.image}`;
+
+        // fs.access utilizado para testar as permissões do arquivo
+        fs.access(imgOld, (error) => {
+            // Acessando o if quando não tiver nanhum erro
+            if(!error){
+                // Apagando a imagem antiga
+                fs.unlink(imgOld, () => {});
+            }
+        });
+    }
+    
     // Editando no banco de dados
     db.Users.update(
         { image: req.file.filename },
