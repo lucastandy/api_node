@@ -160,3 +160,8 @@ npx sequelize-cli migration:generate --name alter-users-image
 ```
 npm install --save multer
 ```
+
+### Biblioteca para salvar logs
+```
+npm install --save winston
+```

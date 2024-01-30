@@ -17,6 +17,12 @@ const jwt = require('jsonwebtoken');
 // Incluindo o arquivo com as variáveis de ambiente
 require('dotenv').config();
 
+// Validando o input do formulário
+const yup = require('yup');
+// Incluindo o arquivo responsável em salvar os logs
+const longger = require('../services/loggerServices');
+
+
 // Criando a rota Login
 // Endereço para acessar a api através de aplicação externa: http://localhost:8090/login
 router.post("/login", async (req, res) => {
@@ -32,6 +38,9 @@ router.post("/login", async (req, res) => {
     // console.log(user);
     // Acessa o IF se encontrar o registro no banco de dados
     if (!user) {
+
+        // Salvar o log no nível error
+        longger.warn({message: "Tentativa de login com usuário incorreto.",email: data.email});
         // Retornando um objeto como resposta
         return res.status(401).json({
             error: true,
@@ -40,6 +49,10 @@ router.post("/login", async (req, res) => {
     }
     // Comparando a senha do usuário com a senha salva no banco de dados
     if (!(await bycrypt.compare(String(data.password), String(user.password)))) {
+        
+        // Salvar o log no nível error
+        longger.warn({message: "Tentativa de login com senha incorreta.",email: data.email});
+
         // Retornando um objeto como resposta
         return res.status(401).json({
             error: true,
