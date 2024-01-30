@@ -40,7 +40,7 @@ router.post("/login", async (req, res) => {
     if (!user) {
 
         // Salvar o log no nível error
-        longger.warn({message: "Tentativa de login com usuário incorreto.",email: data.email});
+        longger.warn({ message: "Tentativa de login com usuário incorreto.", email: data.email });
         // Retornando um objeto como resposta
         return res.status(401).json({
             error: true,
@@ -49,9 +49,9 @@ router.post("/login", async (req, res) => {
     }
     // Comparando a senha do usuário com a senha salva no banco de dados
     if (!(await bycrypt.compare(String(data.password), String(user.password)))) {
-        
+
         // Salvar o log no nível error
-        longger.warn({message: "Tentativa de login com senha incorreta.",email: data.email});
+        longger.warn({ message: "Tentativa de login com senha incorreta.", email: data.email });
 
         // Retornando um objeto como resposta
         return res.status(401).json({
@@ -60,10 +60,10 @@ router.post("/login", async (req, res) => {
         });
     }
     // Gerando o token de autenticação
-    const token = jwt.sign({id: user.id}, process.env.SECRET,{
+    const token = jwt.sign({ id: user.id }, process.env.SECRET, {
         //expiresIn: 600, // Indica 10 minutos
-         expiresIn: '7d', // Corresponde a 7 dias
-        
+        expiresIn: '7d', // Corresponde a 7 dias
+
     });
 
 
@@ -71,8 +71,92 @@ router.post("/login", async (req, res) => {
     return res.json({
         error: false,
         message: "Login realizado com sucesso!",
-        user:{id: user.id, name: user.name, email: user.email, token}
+        user: { id: user.id, name: user.name, email: user.email, token }
     });
+});
+
+// Criando a rota recuperar senha
+// Endereço para acessar a api através de aplicação externa: http://locahost:8090/recover-password
+
+router.post("/recover-password", async (req, res) => {
+
+    // Recebendo os dados enviados no corpo da requisição
+    var data = req.body;
+    // console.log(data);
+
+    // Validando os campos utilizando yup
+    const schema = yup.object().shape({
+        urlRecoverPassword: yup.string("Erro: Necessário enviar a URL!").required("Erro: Necessário enviar a URL!"),
+        email: yup.string("Erro: Necessário preencher o campo e-mail!").required("Erro: Necessário preencher o campo e-mail!")
+    });
+
+    // Verificando se todos os campos passaram pela validação
+    try {
+        await schema.validate(data);
+    } catch (error) {
+        // Retornando o objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: error.errors
+        });
+    }
+
+    // Recuperando os registros do banco de dados
+    const user = await db.Users.findOne({
+        // Indicando quais colunas recuperar
+        attributes: ['id', 'name'],
+        // Acrescentando condição para indicar qual registro dever ser retornado do banco de dados
+        where: {
+            email: data.email
+        }
+
+    });
+
+    // Acessando o if se encontrar o registro no banco de dados
+    if (!user) {
+
+        // Salvando o log no nível info
+        longger.info({ message: "Tentativa recuperar senha com e-mail incorreto.", email: data.email, date: new Date() });
+
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: e-mail não está cadastrado!"
+        });
+    }
+
+    // Gerando a chave para recuperar a senha
+    var recoverPassword = (await bycrypt.hash(data.email, 8)).replace(/\./g, "").replace(/\//g, "");
+
+    // Editando o registro no banco de dados
+    await db.Users.update({ recoverPassword }, {
+        where: { id: user.id }
+    }).then(() => {
+        // Retornando um objeto como resposta
+        return res.json({
+            error: false,
+            message: "Enviado e-mail com instruções para recuperar a senha. Acesse a sua caixa de e-mail para recuperar a senha!"
+        });
+
+    }).catch(() => {
+        // Salvando o log no nível warn
+        longger.warn({ message: "E-mail recuperar senha não enviado. Erro editar usuário no banco de dados.", email: data.email, date: new Date() });
+
+        // Retornando um objeto como resposta
+        return res.json({
+            error: true,
+            message: "Erro: Link recuperar senha não enviado, entre em contato com o suporte: " + process.env.EMAIL_ADM
+        });
+
+    });
+
+    // Retornando um objeto como resposta
+    return res.json({
+        error: false,
+        message: "Acessou!",
+        recoverPassword
+    });
+
 });
 
 
