@@ -20,7 +20,10 @@ require('dotenv').config();
 // Validando o input do formulário
 const yup = require('yup');
 // Incluindo o arquivo responsável em salvar os logs
-const longger = require('../services/loggerServices');
+const logger = require('../services/loggerServices');
+
+// Dependência para enviar e-mail
+const nodemailer = require('nodemailer');
 
 
 // Criando a rota Login
@@ -40,7 +43,7 @@ router.post("/login", async (req, res) => {
     if (!user) {
 
         // Salvar o log no nível error
-        longger.warn({ message: "Tentativa de login com usuário incorreto.", email: data.email });
+        logger.warn({ message: "Tentativa de login com usuário incorreto.", email: data.email });
         // Retornando um objeto como resposta
         return res.status(401).json({
             error: true,
@@ -51,7 +54,7 @@ router.post("/login", async (req, res) => {
     if (!(await bycrypt.compare(String(data.password), String(user.password)))) {
 
         // Salvar o log no nível error
-        longger.warn({ message: "Tentativa de login com senha incorreta.", email: data.email });
+        logger.warn({ message: "Tentativa de login com senha incorreta.", email: data.email });
 
         // Retornando um objeto como resposta
         return res.status(401).json({
@@ -116,7 +119,7 @@ router.post("/recover-password", async (req, res) => {
     if (!user) {
 
         // Salvando o log no nível info
-        longger.info({ message: "Tentativa recuperar senha com e-mail incorreto.", email: data.email, date: new Date() });
+        logger.info({ message: "Tentativa recuperar senha com e-mail incorreto.", email: data.email, date: new Date() });
 
         // Retornando um objeto como resposta
         return res.status(400).json({
@@ -132,15 +135,51 @@ router.post("/recover-password", async (req, res) => {
     await db.Users.update({ recoverPassword }, {
         where: { id: user.id }
     }).then(() => {
-        // Retornando um objeto como resposta
-        return res.json({
-            error: false,
-            message: "Enviado e-mail com instruções para recuperar a senha. Acesse a sua caixa de e-mail para recuperar a senha!"
+
+        // Criando a variável com as credenciais do servidor para enviar e-mail
+        var transport = nodemailer.createTransport({
+            host: process.env.EMAIL_HOST,
+            port: process.env.EMAIL_PORT,
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
         });
 
+        //   Criando a variável com o conteúdo do e-mail
+        var message_content = {
+            from: process.env.EMAIL_FROM_PASS, // E-mail do Rementente
+            to: data.email, // E-mail do destinatário 
+            subject: "Recuperar senha", // Título do e-mail
+            text: `Prezado (a) ${user.name} \n\nInformações que a sua solicitação de senha foi recebida com sucesso.\n\nClique no link abaixo para criar uma nova senha em nosso sistema: ${data.urlRecoverPassword}${recoverPassword}\n\nEsta mensagem foi enviada a você pela empresa ${process.env.NAME_EMP}.\n\nVocê está recebendo porque está cadastrado no banco de dados da empresa ${process.env.NAME_EMP}. Nenhum e-mail enviado pela empresa ${process.env.NAME_EMP} tem arquivos anexados ou solicita o preenchimento de senhas e informações cadastrais.\n\n`, // Conteúdo do e-mail somente texto
+            html: `Prezado (a) ${user.name} <br><br>Informações que a sua solicitação de senha foi recebida com sucesso.<br><br>Clique no link abaixo para criar uma nova senha em nosso sistema: <a href='${data.urlRecoverPassword}${recoverPassword}'> ${data.urlRecoverPassword}${recoverPassword}</a><br><br>Esta mensagem foi enviada a você pela empresa ${process.env.NAME_EMP}.<br><br>Você está recebendo porque está cadastrado no banco de dados da empresa ${process.env.NAME_EMP}. Nenhum e-mail enviado pela empresa ${process.env.NAME_EMP} tem arquivos anexados ou solicita o preenchimento de senhas e informações cadastrais.<br><br>` // Conteúdo do e-mail com HTML
+        }
+
+        // Enviando o e-mail
+        transport.sendMail(message_content, function (err) {
+            if (err) {
+                // Salvando o log no nível warn
+                logger.warn({message: "E-mail recuperar senha não enviado. 2", email: data.email, date: new Date()});
+                // Retornando um objeto como resposta
+                return res.status(400).json({
+                    error: true,
+                    message: "Erro: E-mail com as intruções para recuperar a senha não enviado, tente novamente ou entre em contato com o e-mail: " + process.env.EMAIL_ADM
+                });
+
+            } else {
+                // Salvando o log no nível info
+                logger.info({message: "Enviado e-mail com instruções para recuperar a senha.", email: data.email, date: new Date()});
+                // Retornando um objeto como resposta
+                return res.json({
+                    error: false,
+                    message: "Enviado e-mail com instruções para recuperar a senha. Acesse a sua caixa de e-mail para recuperar a senha!"
+                });
+
+            }
+        });
     }).catch(() => {
         // Salvando o log no nível warn
-        longger.warn({ message: "E-mail recuperar senha não enviado. Erro editar usuário no banco de dados.", email: data.email, date: new Date() });
+        logger.warn({ message: "E-mail recuperar senha não enviado. Erro editar usuário no banco de dados.", email: data.email, date: new Date() });
 
         // Retornando um objeto como resposta
         return res.json({
@@ -148,13 +187,6 @@ router.post("/recover-password", async (req, res) => {
             message: "Erro: Link recuperar senha não enviado, entre em contato com o suporte: " + process.env.EMAIL_ADM
         });
 
-    });
-
-    // Retornando um objeto como resposta
-    return res.json({
-        error: false,
-        message: "Acessou!",
-        recoverPassword
     });
 
 });
