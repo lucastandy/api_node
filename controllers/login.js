@@ -159,7 +159,7 @@ router.post("/recover-password", async (req, res) => {
         transport.sendMail(message_content, function (err) {
             if (err) {
                 // Salvando o log no nível warn
-                logger.warn({message: "E-mail recuperar senha não enviado. 2", email: data.email, date: new Date()});
+                logger.warn({ message: "E-mail recuperar senha não enviado. 2", email: data.email, date: new Date() });
                 // Retornando um objeto como resposta
                 return res.status(400).json({
                     error: true,
@@ -168,7 +168,7 @@ router.post("/recover-password", async (req, res) => {
 
             } else {
                 // Salvando o log no nível info
-                logger.info({message: "Enviado e-mail com instruções para recuperar a senha.", email: data.email, date: new Date()});
+                logger.info({ message: "Enviado e-mail com instruções para recuperar a senha.", email: data.email, date: new Date() });
                 // Retornando um objeto como resposta
                 return res.json({
                     error: false,
@@ -191,6 +191,66 @@ router.post("/recover-password", async (req, res) => {
 
 });
 
+// Criando rota para validar a chave recuperar senha
+// Endereço para acessar a api através de aplicação externa: http://localhost:8090/validate-recover-password
+router.post('/validate-recover-password', async (req, res) => {
+
+    // Recebendo os dados enviados no corpo da requisição
+    var data = req.body;
+
+    // Validando os campos utilizando yup
+    const schema = yup.object().shape({
+        recoverPassword: yup.string("Erro: Necessário enviar a chave!").required("Erro: Necessário enviar a chave!")
+    });
+
+    // Verificando se todos os campos passaram pela validação
+    try {
+        await schema.validate(data);
+    } catch (error) {
+        // Retornando o objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: error.errors
+        });
+    }
+
+    // Recuperando o registro do banco de dados
+    const user = await db.Users.findOne({
+        // Indicando quais colunas recuperar
+        attributes: ['id'],
+
+        // Acrescentando condição para indicar qual registro deve ser retornado do banco de dados
+        where: {
+            recoverPassword: data.recoverPassword
+        }
+    });
+
+    // Acessa o if se encontrar o registro no banco de dados
+    if (user) {
+
+        // Salvando o log no nível info
+        logger.info({ message: "Validar chave recuperar senha, chave válida.", date: new Date() });
+
+        // Retornando um objeto como resposta
+        return res.json({
+            error: false,
+            message: "Chave recuperar senha válida!"
+        });
+
+    } else {
+
+        // Salvando o log no nível info
+        logger.info({ message: "Válidar chave recuperar senha, chave inválida.", date: new Date() });
+
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: chave recuperar senha inválida!"
+        });
+
+    }
+
+});
 
 
 // Exportando a instrução que está dentro da constante router
