@@ -252,6 +252,89 @@ router.post('/validate-recover-password', async (req, res) => {
 
 });
 
+// Criando a rota atualizar a senha
+// Endereço para acessar a api através de aplicação externa: http://localhost:8090/update-password
+router.post("/update-password", async (req, res) => {
+
+    // Recebendo os dados enviados no corpo da requisição
+    var data = req.body;
+
+    // Validando os campos utilizando yup
+    const schema = yup.object().shape({
+        recoverPassword: yup.string("Erro: Necessário enviar a chave!").required("Erro: Necessário enviar a chave!"),
+        password: yup.string("Erro: Necessário preencher o campo senha!").required("Erro: Necessário preencher o campo senha!").min(6, 'Erro: A senha deve ter no mínimo 6 caracteres!')
+    });
+
+    // Verificando se todos os campos passaram pela validação
+    try {
+        await schema.validate(data);
+    } catch (error) {
+        // Retornando o objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: error.errors
+        });
+    }
+
+    // Recuperando o registro do banco de dados
+    const user = await db.Users.findOne({
+        // Indicando quais colunas recuperar
+        attributes: ['id', 'email'],
+
+        // Acrescentando condição para indicar qual registro deve ser retornado do banco de dados
+        where: {
+            recoverPassword: data.recoverPassword
+        }
+    });
+
+    // Acessa o if se encontrar o registro no banco de dados
+    if (user) {
+
+        // Criptografando a senha
+        var password = await bycrypt.hash(data.password, 8);
+
+        // Editando o registro no banco de dados
+        await db.Users.update({ recoverPassword: null, password }, {
+            where: { id: user.id }
+        }).then(() => {
+            // Salvando o log no nível info
+            logger.info({ message: "Senha editada com sucesso.", date: new Date() });
+
+            // Retornando um objeto como resposta
+            return res.json({
+                error: false,
+                message: "Senha editada com sucesso!"
+            });
+
+        }).catch(() => {
+            // Salvando o log no nível info
+            logger.info({ message: "Senha não editada.", date: new Date() });
+
+            // Retornando um objeto como resposta
+            return res.status(400).json({
+                error: true,
+                message: "Senha não editada!"
+            });
+
+        });
+
+    } else {
+
+        // Salvando o log no nível info
+        logger.info({ message: "Chave recuperar senha, chave inválida.", date: new Date() });
+
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: chave recuperar senha inválida!"
+        });
+
+    }
+
+
+
+});
+
 
 // Exportando a instrução que está dentro da constante router
 module.exports = router;
