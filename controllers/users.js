@@ -12,6 +12,9 @@ const bycrypt = require('bcryptjs');
 // Dependência para validar os inputs o formulário
 const yup = require('yup');
 
+// Incluindo o arquivo responsável em salvar os logs
+const logger = require('../services/loggerServices');
+
 // Operador do sequelize
 const { Op } = require("sequelize");
 
@@ -39,7 +42,7 @@ router.get("/users", eAdmin, async (req, res) => {
     console.log(req.userId);
 
     // Indicando o limite de registros em cada página
-    const limit = 40;
+    const limit = 4;
 
     // Variável com o número da última página
     var lastPage = 1;
@@ -78,14 +81,23 @@ router.get("/users", eAdmin, async (req, res) => {
 
     });
 
+    // Salvando o log no nível info
+    logger.info({ message: "Listar usuários.", userId: req.userId, date: new Date() });
+
     // Acessa o if se encontrar o registro no banco de dados
     if (users) {
         // Retornando um objeto como resposta
         return res.json({
             error: false,
-            users
+            users,
+            lastPage,
+            countUser
         });
     } else {
+
+        // Salvando o log no nível info
+        logger.info({ message: "Listar usuários não executado corretamente.", userId: req.userId, date: new Date() });
+
         // Retornando um objeto como resposta
         return res.status(400).json({
             error: true,
