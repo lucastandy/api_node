@@ -68,5 +68,89 @@ router.get("/profile", eAdmin, async (req, res) => {
 
 });
 
+// Criando a rota editar perfil
+router.put("/profile/", eAdmin, async (req, res) => {
+
+    // Recebendo os dados enviados no corpo da requisição
+    const data = req.body;
+
+    // Validar os campos utilizando o yup
+    const schema = yup.object().shape({
+        email: yup.string("Erro: Necessário preencher o campo e-mail!").required("Erro: Necessário preencher o campo e-mail!").email("Erro: Necessário preecher um e-mail válido!"),
+        name: yup.string("Erro: Necessário preencher o campo nome!").required("Erro: Necessário preencher o campo nome!")
+    });
+
+    // Verificando se todos os campos passaram pela validação
+    try{
+        await schema.validate(data);
+    }catch(error){
+        // Retornar um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: error.errors
+        });
+    }
+
+
+
+    // Recuperando o registro do banco de dados
+    const user = await db.Users.findOne({
+
+        // Indicando quais colunas recuperar
+        attributes: ['id'],
+
+        // Acrescentando condição para indicar qual registro deve ser retornado do banco de dados
+        where: {
+            email: data.email,
+            id: {
+                // Operador de negação para ignorar o registro do usuário que está sendo editado
+                [Op.ne]: Number(req.userId)
+            }
+        }
+
+    });
+
+    // console.log(user);
+
+    // Acessando o IF se encontrar o registro no banco de dados
+    if (user) {
+
+        // Salvando o log no nível info
+        logger.info({message: "Tentativa de usar e-mail já cadastrado em outro usuário.", id: req.userId, name: data.name, email: data.email, userId: req.userId, date: new Date()});
+
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: Este e-mail já está cadastrado!"
+        });
+
+    }
+
+    // Editando os dados no banco de dados
+    await db.Users.update(data, { where: { id: req.userId } }).then(() => {
+
+        // Salvando o log no nível info
+        logger.info({message: "Perfil editado com sucesso.", id: req.userId, name: data.name, email: data.email, userId: req.userId, date: new Date()});
+
+        // Retornando um objeto como resposta
+        return res.json({
+            error: false,
+            message: "Perfil editado com sucesso!"
+        });
+
+    }).catch(() => {
+
+        // Salvando o log no nível info
+        logger.info({message: "Perfil não editado.", id: req.userId, name: data.name, email: data.email, userId: req.userId, date: new Date()});
+
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: perfil não editado!"
+        });
+    });
+
+});
+
 // Exportando a instrução que está dentro da constante router
 module.exports = router;
