@@ -81,9 +81,9 @@ router.put("/profile/", eAdmin, async (req, res) => {
     });
 
     // Verificando se todos os campos passaram pela validação
-    try{
+    try {
         await schema.validate(data);
-    }catch(error){
+    } catch (error) {
         // Retornar um objeto como resposta
         return res.status(400).json({
             error: true,
@@ -116,7 +116,7 @@ router.put("/profile/", eAdmin, async (req, res) => {
     if (user) {
 
         // Salvando o log no nível info
-        logger.info({message: "Tentativa de usar e-mail já cadastrado em outro usuário.", id: req.userId, name: data.name, email: data.email, userId: req.userId, date: new Date()});
+        logger.info({ message: "Tentativa de usar e-mail já cadastrado em outro usuário.", id: req.userId, name: data.name, email: data.email, userId: req.userId, date: new Date() });
 
         // Retornando um objeto como resposta
         return res.status(400).json({
@@ -130,7 +130,7 @@ router.put("/profile/", eAdmin, async (req, res) => {
     await db.Users.update(data, { where: { id: req.userId } }).then(() => {
 
         // Salvando o log no nível info
-        logger.info({message: "Perfil editado com sucesso.", id: req.userId, name: data.name, email: data.email, userId: req.userId, date: new Date()});
+        logger.info({ message: "Perfil editado com sucesso.", id: req.userId, name: data.name, email: data.email, userId: req.userId, date: new Date() });
 
         // Retornando um objeto como resposta
         return res.json({
@@ -141,7 +141,7 @@ router.put("/profile/", eAdmin, async (req, res) => {
     }).catch(() => {
 
         // Salvando o log no nível info
-        logger.info({message: "Perfil não editado.", id: req.userId, name: data.name, email: data.email, userId: req.userId, date: new Date()});
+        logger.info({ message: "Perfil não editado.", id: req.userId, name: data.name, email: data.email, userId: req.userId, date: new Date() });
 
         // Retornando um objeto como resposta
         return res.status(400).json({
@@ -150,6 +150,89 @@ router.put("/profile/", eAdmin, async (req, res) => {
         });
     });
 
+});
+
+
+// Rota para editar a imagem, recebendo o parâmetro
+// Endereço de acesso: http://localhost:8089/profile-image
+router.put("/profile-image", eAdmin, upload.single('image'), async (req, res) => {
+
+    // Acessa o if quando a extensão da imagem é inválida
+    // console.log(req.file);
+    if (!req.file) {
+
+        // Salvando o log no nível info
+        logger.info({ message: "Extensão da imagem inváida no editar perfil", userId: req.userId, date: new Date() });
+
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: Selecione uma imagem válida JPEG ou PNG!"
+        });
+
+    }
+
+    // Recuperando os registros do banco de dados
+    const user = await db.Users.findOne({
+        // Indicando quais colunas recuperar
+        attributes: ['id', 'image'],
+
+        // Acrescentando condição para indicar qual registro deve ser retornado do banco de dados
+        where: { id: req.userId }
+    });
+
+    // Verificando se o usuário tem imagem salva no banco de dados.
+    // console.log(user);
+    if (user.dataValues.image) {
+        // Criando o caminho da imagem que o usuário tem no banco de dados
+        var imgOld = `./public/images/users/${user.dataValues.image}`;
+
+        // fs.access utilizado para testar as permissões do arquivo
+        fs.access(imgOld, (error) => {
+            // Acessando o if quando não tiver nanhum erro
+            if (!error) {
+                // Apagando a imagem antiga
+                fs.unlink(imgOld, () => {
+                    // Salvando o log no nível info
+                    logger.info({ message: "Excluida a imagem do usuário", id: req.userId, image: user.dataValues.image, userId: req.userId, date: new Date() });
+
+                });
+            }
+        });
+    }
+
+    // Editando no banco de dados
+    db.Users.update(
+        { image: req.file.filename },
+        { where: { id: req.userId } })
+        .then(() => {
+            
+            // Salvando o log no nível info
+            logger.info({ message: "Imagem do perfil editado com sucesso", image: req.file.filename, userId: req.userId, date: new Date() });
+
+            // Retornando um objeto como resposta
+            return res.json({
+                error: false,
+                message: "Imagem editada com sucesso 2!"
+            });
+        }).catch(() => {
+
+            // Salvando o log no nível info
+            logger.info({ message: "Imagem do perfil não editado", image: req.file.filename, userId: req.userId, date: new Date() });
+
+
+            // Retornando um objeto como resposta
+            return res.status(400).json({
+                error: true,
+                message: "Erro: Imagem não editada!"
+            });
+        });
+
+    // Retornando um objeto como resposta
+    // return res.json({
+    //     error: false,
+    //     message: "Imagem editada com sucesso!"
+    // });
 });
 
 // Exportando a instrução que está dentro da constante router
