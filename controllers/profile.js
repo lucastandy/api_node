@@ -152,6 +152,60 @@ router.put("/profile/", eAdmin, async (req, res) => {
 
 });
 
+// Criando a rota editar senha do perfil
+// Endereço para acessar a API através de aplicação externa: http://localhost:8090/profile-password
+// A aplicação externa deve indicar que está enviando os dados em formato de objeto Content-Type: application/json
+router.put("/profile-password/", eAdmin, async (req, res) => {
+
+    // Recebendo os dados enviados no corpo da requisição
+    const data = req.body;
+
+    // Validar os campos utilizando o yup
+    const schema = yup.object().shape({
+        password: yup.string("Erro: Necessário preencher o campo senha!").required("Erro: Necessário preencher o campo senha!")
+    });
+
+    // Verificando se todos os campos passaram pela validação
+    try {
+        await schema.validate(data);
+    } catch (error) {
+        // Retornar um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: error.errors
+        });
+    }
+
+    // Criptografando a senha
+    data.password = await bycrypt.hash(String(data.password), 8);
+
+
+    // Editando os dados no banco de dados
+    await db.Users.update(data, { where: { id: req.userId } }).then(() => {
+
+        // Salvando o log no nível info
+        logger.info({ message: "Senha do Perfil editado com sucesso.", id: req.userId, userId: req.userId, date: new Date() });
+
+        // Retornando um objeto como resposta
+        return res.json({
+            error: false,
+            message: "Senha do Perfil editado com sucesso!"
+        });
+
+    }).catch(() => {
+
+        // Salvando o log no nível info
+        logger.info({ message: "Senha do Perfil não editado.", id: req.userId, userId: req.userId, date: new Date() });
+
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: Senha do perfil não editado!"
+        });
+    });
+
+});
+
 
 // Rota para editar a imagem, recebendo o parâmetro
 // Endereço de acesso: http://localhost:8089/profile-image
