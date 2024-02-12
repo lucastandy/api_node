@@ -31,6 +31,26 @@ const nodemailer = require('nodemailer');
 router.post("/login", async (req, res) => {
     var data = req.body;
     // console.log(data);
+
+    // Validando os campos utilizando o yup
+    const schema = yup.object().shape({
+        password: yup.string("Erro: Necessário preencher o campo senha!")
+            .required("Erro: Necessário preencher o campo senha!"),
+        email: yup.string("Erro: Necessário preencher o campo usuário!")
+            .required("Erro: Necessário preencher o campo usuário!")
+    });
+
+    // Verificando se todos os campos passaram pela validação
+    try {
+        await schema.validate(data);
+    } catch (error) {
+        // Retornar objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: error.errors
+        });
+    }
+
     // Recuperando os registros do banco de dados
     const user = await db.Users.findOne({
         // Indicando quais colunas recuperar
