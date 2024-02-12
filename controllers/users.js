@@ -171,7 +171,7 @@ router.post("/users", eAdmin, async (req, res) => {
     // Validando os campos utilizando o yup
     const schema = yup.object().shape({
         situationId: yup.number("Erro: Necessário preecher o campo situação!").required("Erro: Necessário preecher o campo situação!"),
-        password: yup.string("Erro: Necessário preecher o campo senha!").required("Erro: Necessário preecher o campo senha!"),
+        password: yup.string("Erro: Necessário preecher o campo senha!").required("Erro: Necessário preecher o campo senha!").min(6, 'Erro: A senha deve ter no mínimo 6 caracteres!'),
         email: yup.string("Erro: Necessário preecher o campo email!").required("Erro: Necessário preecher o campo email!").email("Erro: Necessário preencher um e-mail válido!"),
         name: yup.string("Erro: Necessário preecher o campo nome!").required("Erro: Necessário preecher o campo nome!"),
 

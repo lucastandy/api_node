@@ -16,6 +16,9 @@ const logger = require('../services/loggerServices');
 // Dependência para enviar e-mail
 const nodemailer = require('nodemailer');
 
+// Dependência para criptografar a senha
+const bycrypt = require('bcryptjs');
+
 // Criando a rota recuperar senha
 // Endereço para acessar a api através de aplicação externa: http://localhost:8090/recover-password-token
 router.post("/recover-password-token", async (req, res) => {
@@ -215,6 +218,89 @@ router.post('/validate-recover-password-token', async (req, res) => {
             message: "Erro: Token recuperar senha inválido!",
         });
     }
+});
+
+// Criando a rota atualizar a senha
+// Endereço para acessar a api através de aplicação externa: http://localhost:8090/update-password-token
+router.put("/update-password-token", async (req, res) => {
+
+    // Recebendo os dados enviados no corpo da requisição
+    var data = req.body;
+
+    // Validando os campos utilizando yup
+    const schema = yup.object().shape({
+        recoverPasswordToken: yup.string("Erro: Necessário enviar o token!").required("Erro: Necessário enviar o token!"),
+        password: yup.string("Erro: Necessário preencher o campo senha!").required("Erro: Necessário preencher o campo senha!").min(6, 'Erro: A senha deve ter no mínimo 6 caracteres!')
+    });
+
+    // Verificando se todos os campos passaram pela validação
+    try {
+        await schema.validate(data);
+    } catch (error) {
+        // Retornando o objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: error.errors
+        });
+    }
+
+    // Recuperando o registro do banco de dados
+    const user = await db.Users.findOne({
+        // Indicando quais colunas recuperar
+        attributes: ['id', 'email'],
+
+        // Acrescentando condição para indicar qual registro deve ser retornado do banco de dados
+        where: {
+            recoverPasswordToken: data.recoverPasswordToken
+        }
+    });
+
+    // Acessa o if se encontrar o registro no banco de dados
+    if (user) {
+
+        // Criptografando a senha
+        var password = await bycrypt.hash(data.password, 8);
+
+        // Editando o registro no banco de dados
+        await db.Users.update({ recoverPasswordToken: null, password }, {
+            where: { id: user.id }
+        }).then(() => {
+            // Salvando o log no nível info
+            logger.info({ message: "Senha editada com sucesso.", date: new Date() });
+
+            // Retornando um objeto como resposta
+            return res.json({
+                error: false,
+                message: "Senha editada com sucesso!"
+            });
+
+        }).catch(() => {
+            // Salvando o log no nível info
+            logger.info({ message: "Senha não editada.", date: new Date() });
+
+            // Retornando um objeto como resposta
+            return res.status(400).json({
+                error: true,
+                message: "Erro: Senha não editada!"
+            });
+
+        });
+
+    } else {
+
+        // Salvando o log no nível info
+        logger.info({ message: "Token recuperar senha, chave inválido.", date: new Date() });
+
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: token recuperar senha inválido!"
+        });
+
+    }
+
+
+
 });
 
 // Exportar a instrução que está dentro da constante router 

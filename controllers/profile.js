@@ -162,7 +162,7 @@ router.put("/profile-password/", eAdmin, async (req, res) => {
 
     // Validar os campos utilizando o yup
     const schema = yup.object().shape({
-        password: yup.string("Erro: Necessário preencher o campo senha!").required("Erro: Necessário preencher o campo senha!")
+        password: yup.string("Erro: Necessário preencher o campo senha!").required("Erro: Necessário preencher o campo senha!").min(6, 'Erro: A senha deve ter no mínimo 6 caracteres!')
     });
 
     // Verificando se todos os campos passaram pela validação
