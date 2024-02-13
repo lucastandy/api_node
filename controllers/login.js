@@ -355,6 +355,100 @@ router.put("/update-password", async (req, res) => {
 
 });
 
+// Criando a rota cadastrar do login
+/*
+A aplicação externa deve indicar que está enviando os dados em formato de objeto:
+Content-Type: application/json
+Dados em formato de objeto
+
+{
+    "name" : "Lucas Tandy",
+    "email": "lucastitandy@gmail.com",
+    "password": "123456"
+}
+
+*/
+router.post("/new-users", async (req, res) => {
+
+    // Recebendo os dados enviados no corpo da requisição
+    var data = req.body;
+
+    // Validando os campos utilizando o yup
+    const schema = yup.object().shape({
+        password: yup.string("Erro: Necessário preecher o campo senha!").required("Erro: Necessário preecher o campo senha!").min(6, 'Erro: A senha deve ter no mínimo 6 caracteres!'),
+        email: yup.string("Erro: Necessário preecher o campo email!").required("Erro: Necessário preecher o campo email!").email("Erro: Necessário preencher um e-mail válido!"),
+        name: yup.string("Erro: Necessário preecher o campo nome!").required("Erro: Necessário preecher o campo nome!"),
+
+    });
+
+    // Verificando se todos os campos passaram pela validação
+    try {
+        await schema.validate(data);
+    } catch (error) {
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: error.errors
+        });
+
+    }
+
+    // Recuperando o registro do banco de dados
+    const user = await db.Users.findOne({
+
+        // Indicando quais colunas recuperar
+        attributes: ['id'],
+
+        // Acrescentando condição para indicar qual registro deve ser retornado do banco de dados
+        where: { email: data.email }
+
+    });
+
+    // console.log(user);
+
+    // Acessando o IF se encontrar o registro no banco de dados
+    if (user) {
+
+        // Salvando o log no nível info
+        logger.info({message: "Tentaiva de cadastro de e-mail já cadastrado.", name: data.name, email: data.email, userId: req.userId, date: new Date()});
+
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: Este e-mail já está cadastrado!"
+        });
+
+    }
+
+    // Criptografando a senha
+    data.password = await bycrypt.hash(String(data.password), 8);
+
+    // Salvando os dados no banco de dados
+    await db.Users.create(data).then((dataUser) => {
+
+        // Salvando o log no nível info
+        logger.info({message: "Usuário cadastrado com sucesso.", name: data.name, email: data.email, userId: req.userId, date: new Date()});
+
+        // Retornando um objeto como resposta
+        return res.json({
+            error: false,
+            message: "Usuário cadastrado com sucesso!",
+            dataUser
+        });
+    }).catch(() => {
+
+        // Salvando o log no nível info
+        logger.info({message: "Usuário não cadastrado.", name: data.name, email: data.email, userId: req.userId, date: new Date()});
+
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: usuário não cadastrado"
+        });
+    });
+
+});
+
 
 // Exportando a instrução que está dentro da constante router
 module.exports = router;
