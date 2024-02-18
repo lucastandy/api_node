@@ -29,8 +29,20 @@ const nodemailer = require('nodemailer');
 // Criando a rota Login
 // Endereço para acessar a api através de aplicação externa: http://localhost:8090/login
 router.post("/login", async (req, res) => {
+    
+    // Recebendo dados enviados no corpo da requisição
     var data = req.body;
     // console.log(data);
+
+    // Chamando a função para pausar o processamento por 3 segundos
+    // await sleep(3000);
+
+    // // Função para pausar o processamento por 3 segundos
+    // function sleep(ms){
+    //     return new Promise((resolve) => {
+    //         setTimeout(resolve, ms);
+    //     });
+    // }
 
     // Validando os campos utilizando o yup
     const schema = yup.object().shape({
@@ -372,6 +384,16 @@ router.post("/new-users", async (req, res) => {
 
     // Recebendo os dados enviados no corpo da requisição
     var data = req.body;
+
+    // Chamando a função para pausar o processamento por 3 segundos
+    // await sleep(3000);
+
+    // // Função para pausar o processamento por 3 segundos
+    // function sleep(ms){
+    //     return new Promise((resolve) => {
+    //         setTimeout(resolve, ms);
+    //     });
+    // }
 
     // Validando os campos utilizando o yup
     const schema = yup.object().shape({
