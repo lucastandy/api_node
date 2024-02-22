@@ -8,6 +8,9 @@ const router = express.Router();
 // Realizando a inclusão da conexão com o banco de dados
 const db = require("../db/models"); // O node por padrão vai pegar o arquivo index.js, presente na pasta models.
 
+// Incluindo o arquivo para validar o token
+const { eAdmin } = require('../services/authService');
+
 // Dependência para criptografar a senha
 const bycrypt = require('bcryptjs');
 
@@ -110,9 +113,53 @@ router.post("/login", async (req, res) => {
     });
 });
 
+// Criando a rota validar token
+// Endereço para acessar a api através de aplicação externa: http://locahost:8090/val-token
+router.get("/val-token", eAdmin, async (req, res) => {
+
+    // Recuperando os registros do banco de dados
+    const user = await db.Users.findOne({
+        // Indicando quais colunas recuperar
+        attributes: ['id', 'name', 'email'],
+        // Acrescentando condição para indicar qual registro dever ser retornado do banco de dados
+        where: {
+            id: req.userId
+        }
+
+    });
+
+    // Acessando o if se encontrar o registro no banco de dados
+    if (user) {
+
+        // Gerando o token de autenticação
+        const token = jwt.sign({id: user.id}, process.env.SECRET, {
+            // expiresIn: 600 // 10 minutos
+            expiresIn: '7d', // 7 dias
+        });
+
+        // Salvando o log no nível info
+        logger.info({ message: "Token válido.", userId: req.userId, date: new Date() });
+
+        // Retornando um objeto como resposta
+        return res.json({
+            error: false,
+            user: {id: user.id, name: user.name, email: user.email, token}
+        });
+    }else{
+        // Salvando o log no nível info
+        logger.info({ message: "Token inválido.", userId: req.userId, date: new Date() });
+
+        // Retornando um objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: "Erro: Token inválido!"
+        });
+
+    }
+});
+
 // Criando a rota recuperar senha
 // Endereço para acessar a api através de aplicação externa: http://locahost:8090/recover-password
-
 router.post("/recover-password", async (req, res) => {
 
     // Recebendo os dados enviados no corpo da requisição
