@@ -99,6 +99,7 @@ router.post("/login", async (req, res) => {
     }
     // Gerando o token de autenticação
     const token = jwt.sign({ id: user.id }, process.env.SECRET, {
+        // expiresIn: 60, // Indica 1 minuto
         //expiresIn: 600, // Indica 10 minutos
         expiresIn: '7d', // Corresponde a 7 dias
 
@@ -133,6 +134,7 @@ router.get("/val-token", eAdmin, async (req, res) => {
 
         // Gerando o token de autenticação
         const token = jwt.sign({id: user.id}, process.env.SECRET, {
+            // expiresIn: 60, // Indica 1 minuto
             // expiresIn: 600 // 10 minutos
             expiresIn: '7d', // 7 dias
         });
