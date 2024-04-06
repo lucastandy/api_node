@@ -42,7 +42,7 @@ router.get("/users", eAdmin, async (req, res) => {
     console.log(req.userId);
 
     // Indicando o limite de registros em cada página
-    const limit = 4;
+    const limit = 10;
 
     // Variável com o número da última página
     var lastPage = 1;
