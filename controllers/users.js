@@ -6,7 +6,8 @@ const express = require('express');
 const router = express.Router();
 
 // Dependência para criptografar a senha
-const bycrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
+
 // const { STRING } = require('sequelize');
 
 // Dependência para validar os inputs o formulário
@@ -213,7 +214,7 @@ router.post("/users", eAdmin, async (req, res) => {
     }
 
     // Criptografando a senha
-    data.password = await bycrypt.hash(String(data.password), 8);
+    data.password = await bcrypt.hash(String(data.password), 8);
 
     // Salvando os dados no banco de dados
     await db.Users.create(data).then((dataUser) => {
@@ -378,6 +379,68 @@ router.delete("/users/:id", eAdmin, async (req, res) => {
         });
     });
 
+});
+
+// Criando a rota editar senha
+// Endereço para acessar a api através de aplicação externa: http://localhost:8090/users-password
+// A aplicação externa deve indicar que está enviado os dados em formato de objeto Content-Type: application/json
+// Dados em formato de objeto
+/*{
+    "id": 7,
+    "password": "123456"
+}
+*/
+router.put("/users-password", eAdmin, async (req, res) => {
+
+    // Receber os dados enviados no corpo da requisição
+    const data = req.body;
+
+    // Validar os campos utilizando o yup
+    const schema = yup.object().shape({
+        password: yup.string("Erro: Necessário preencher o campo senha!")
+            .required("Erro: Necessário preencher o campo senha!")
+            .min(6, "Erro: A senha deve ter no mínimo 6 caracteres!"),
+        id: yup.string("Erro: Necessário enviar o id do usuário!")
+            .required("Erro: Necessário enviar o id do usuário!")
+    });
+
+    // Verificar se todos os campos passaram pela validação
+    try {
+        await schema.validate(data);
+    } catch (error) {
+        // Retornar objeto como resposta
+        return res.status(400).json({
+            error: true,
+            message: error.errors
+        });
+    }
+
+    // Criptografar a senha
+    data.password = await bcrypt.hash(String(data.password), 8);
+
+    // Editar no banco de dados
+    await db.Users.update(data, { where: { id: data.id } })
+        .then(() => {
+
+            // Salvar o log no nível info
+            logger.info({ message: "Senha do usuário editado com sucesso.", id: data.id, userId: req.userId, date: new Date() });
+
+            // Retornar objeto como resposta
+            return res.json({
+                error: false,
+                message: "Senha do usuário editado com sucesso!"
+            });
+        }).catch(() => {
+
+            // Salvar o log no nível info
+            logger.info({ message: "Senha do usuário não editado.", id: data.id, userId: req.userId, date: new Date() });
+
+            // Retornar objeto como resposta
+            return res.status(400).json({
+                error: true,
+                message: "Erro: Senha do usuário não editado!"
+            });
+        });
 });
 
 // Exportando a instrução que está dentro da constante router
